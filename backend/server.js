@@ -947,16 +947,29 @@ app.get('/api/analytics/summary', auth, async (req, res) => {
   }
 });
 
+// Root route handler
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Multi-Department API Server is running!',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/api/health',
+      api: '/api'
+    }
+  });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  console.log(`404 - Route not found: ${req.method} ${req.originalUrl}`);
-  res.status(404).json({ error: 'Route not found', path: req.originalUrl, method: req.method });
+// 404 handler - only for API routes
+app.use('/api/*', (req, res) => {
+  console.log(`404 - API Route not found: ${req.method} ${req.originalUrl}`);
+  res.status(404).json({ error: 'API Route not found', path: req.originalUrl, method: req.method });
 });
 
 app.listen(PORT, () => {
